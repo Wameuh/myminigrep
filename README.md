@@ -1,0 +1,1 @@
+This repo is just an exercise of the Rust documentation
