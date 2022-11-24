@@ -1,5 +1,6 @@
 use std::env;
 use std::fs;
+use std::process;
 
 struct Args<'a> {
     query: &'a String,
@@ -16,21 +17,19 @@ enum MiniGrepError {
 fn main() {
     let args: Vec<String> = env::args().collect();
     dbg!(&args);
-    let arguments: Args;
-
-    match get_args(&args) {
-        Ok(a) => arguments = a,
-        Err(_) => {println!("Error in the arguments provided"); return;}
-    }
+    let arguments: Args = get_args(&args).unwrap_or_else(|_| {
+        println!("Error in the number of arguments provided");
+        process::exit(1);
+    });
 
     println!("Searching for {}", arguments.query);
     println!("In file {}", arguments.file_path);
     
-    let contents: String;
-    match get_file_content(arguments.file_path) {
-        Ok(c) => contents = c,
-        Err(_) => {println!("Error while reading the file: {}", arguments.file_path); return;}
-    }
+    let contents = get_file_content(arguments.file_path).unwrap_or_else(|_| {
+        println!("Error while reading the file: {}", arguments.file_path);
+        process::exit(1);
+    });
+
     println!("With text:\n{contents}");
 }
 
